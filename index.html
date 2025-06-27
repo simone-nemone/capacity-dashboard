@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personalized Warning System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2882C4;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .main-content {
+            padding: 24px;
+        }
+
+        .current-status {
+            margin-bottom: 32px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .status-header {
+            padding: 16px 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-content {
+            background: #fafafa;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-green .status-header { background: #41B884; }
+        .status-yellow .status-header { background: #E4AE24; }
+        .status-orange .status-header { background: #E9702D; }
+        .status-red .status-header { background: #DF443B; }
+
+        .status-description {
+            font-size: 0.95em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .status-advice {
+            font-size: 0.9em;
+            color: #4b5563;
+            line-height: 1.4;
+        }
+
+        .alert-section {
+            margin: 24px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .alert-header {
+            padding: 16px 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .yellow-header { background: #E4AE24; }
+        .orange-header { background: #E9702D; }
+        .red-header { background: #DF443B; }
+
+        .alert-content {
+            background: #fafafa;
+            padding: 20px;
+        }
+
+        .symptom-list {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .symptom-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .symptom-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .symptom-item.checked {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .symptom-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #bdc3c7;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 14px;
+        }
+
+        .symptom-item.checked .symptom-checkbox {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .symptom-checkbox::before {
+            content: '';
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .symptom-item.checked .symptom-checkbox::before {
+            content: '✓';
+            opacity: 1;
+        }
+
+        .symptom-text {
+            flex: 1;
+            font-size: 0.95em;
+            color: #374151;
+        }
+
+        .intervention-box {
+            background: #E4D7C3;
+            color: #3d2914;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .intervention-box.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intervention-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c1f14;
+        }
+
+        .intervention-content {
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #3d2914;
+        }
+
+        .script-box {
+            background: #9C7F61;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            border-left: 3px solid #7a6249;
+            font-size: 0.9em;
+        }
+
+        .daily-tracker {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .tracker-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .time-log {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .log-entry {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #3b82f6;
+            font-size: 0.9em;
+            color: #4b5563;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .reset-btn {
+            background: #2882C4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 8px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .reset-btn:hover {
+            background: #1e6ba8;
+        }
+
+        .copy-btn {
+            background: #41B884;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 8px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            background: #369870;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Capacity Dashboard</h1>
+            <p>Tracking my neurological capacity in real-time</p>
+        </div>
+
+        <div class="main-content">
+            <div class="current-status status-green" id="currentStatus">
+                <div class="status-header">
+                    <span>🟢 Baseline - Systems Functioning Normally</span>
+                </div>
+                <div class="status-content">
+                    <div class="status-description">Systems functioning normally</div>
+                    <div class="status-advice" id="statusAdvice">You're in a good space right now. This is a great time for proactive self-care and planning.</div>
+                </div>
+            </div>
+
+            <!-- Yellow Alert -->
+            <div class="alert-section" id="yellowAlert">
+                <div class="alert-header yellow-header">
+                    <span>🟡 Yellow Alert - Still Manageable</span>
+                </div>
+                <div class="alert-content">
+                    <div class="symptom-list">
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'yellow')" data-symptom="multiple-voices">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Multiple voices talking at once</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'yellow')" data-symptom="feeling-rushed">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Feeling rushed or pressured to respond quickly</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'yellow')" data-symptom="tension">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Noticing tension in shoulders/jaw</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'yellow')" data-symptom="behind-tasks">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Starting to feel "behind" on tasks</div>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-box" id="yellowIntervention">
+                        <div class="intervention-title">⛨ Yellow Alert Strategies</div>
+                        <div class="intervention-content">
+                            <p><strong>What's happening:</strong> Your processing capacity is being stretched but you still have control.</p>
+                            
+                            <div class="script-box">
+                                <strong>Try saying:</strong><br>
+                                "I need to slow down for a moment to think clearly"
+                            </div>
+                            
+                            <p><strong>Quick interventions:</strong></p>
+                            <ul>
+                                <li>Take 3 deep breaths</li>
+                                <li>Do a quick body scan - notice and release tension</li>
+                                <li>Ask: "What's the most important thing right now?"</li>
+                                <li>Reduce sensory input (lower lights/sounds if possible)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orange Alert -->
+            <div class="alert-section" id="orangeAlert">
+                <div class="alert-header orange-header">
+                    <span>🟠 Orange Alert - Intervention Needed NOW</span>
+                </div>
+                <div class="alert-content">
+                    <div class="symptom-list">
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'orange')" data-symptom="rigid-thinking">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Thoughts becoming rigid/black-and-white</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'orange')" data-symptom="sensory-overwhelm">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Feeling overwhelmed by sensory input</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'orange')" data-symptom="control-urge">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Urge to control everything immediately</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'orange')" data-symptom="curt-speaking">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Starting to speak more curtly than intended</div>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-box" id="orangeIntervention">
+                        <div class="intervention-title">⚠️ Orange Alert - Immediate Action Required</div>
+                        <div class="intervention-content">
+                            <p><strong>What's happening:</strong> Your executive function is overloaded. Act now to prevent escalation.</p>
+                            
+                            <div class="script-box">
+                                <strong>Use these scripts:</strong><br>
+                                "Everyone pause—I can only process one request at a time"<br>
+                                "My brain needs to switch gears. Give me one minute"
+                            </div>
+                            
+                            <p><strong>Emergency interventions:</strong></p>
+                            <ul>
+                                <li><strong>STOP:</strong> Whatever you're doing, pause immediately</li>
+                                <li><strong>BREATHE:</strong> 4 counts in, 6 counts out, repeat 3 times</li>
+                                <li><strong>SIMPLIFY:</strong> What's the ONE most important thing right now?</li>
+                                <li><strong>COMMUNICATE:</strong> Tell others you need a moment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Red Alert -->
+            <div class="alert-section" id="redAlert">
+                <div class="alert-header red-header">
+                    <span>🔴 Red Alert - Emergency Protocols</span>
+                </div>
+                <div class="alert-content">
+                    <div class="symptom-list">
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'red')" data-symptom="harsh-words">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Words coming out harsh before thinking</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'red')" data-symptom="stuck-frozen">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Feeling "stuck" or frozen</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'red')" data-symptom="physical-tension">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Physical tension/agitation</div>
+                        </div>
+                        <div class="symptom-item" onclick="toggleSymptom(this, 'red')" data-symptom="complete-overwhelm">
+                            <div class="symptom-checkbox"></div>
+                            <div class="symptom-text">Complete overwhelm or shutdown approaching</div>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-box" id="redIntervention">
+                        <div class="intervention-title">🚨 Red Alert - Crisis Mode</div>
+                        <div class="intervention-content">
+                            <p><strong>What's happening:</strong> Your nervous system is in protect mode. Priority is safety and regulation.</p>
+                            
+                            <div class="script-box">
+                                <strong>Emergency scripts:</strong><br>
+                                "I'm going to take a breath so I can be the parent you need"<br>
+                                "Mommy needs a moment to calm down so I can help better"
+                            </div>
+                            
+                            <p><strong>Crisis interventions:</strong></p>
+                            <ul>
+                                <li><strong>SAFETY FIRST:</strong> Remove yourself if needed</li>
+                                <li><strong>GROUND:</strong> Feel your feet, name 5 things you can see</li>
+                                <li><strong>REGULATE:</strong> Cold water on wrists, deep breathing</li>
+                                <li><strong>REPAIR PLAN:</strong> Know you'll address this when regulated</li>
+                            </ul>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+                                <strong>Remember:</strong> This is your nervous system protecting you. You're not a bad parent. You can repair and reconnect once you're regulated.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="daily-tracker">
+                <div class="tracker-title">📊 Today's Pattern Log</div>
+                <div class="time-log" id="timeLog">
+                    <div class="log-entry">Start tracking by checking symptoms above</div>
+                </div>
+                <div class="button-container">
+                    <button class="copy-btn" onclick="copyLog()">📋 Copy Log</button>
+                    <button class="reset-btn" onclick="clearLog()">Clear Today's Log</button>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="reset-btn" onclick="resetAll()">Reset All Symptoms</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables with error handling
+        let currentAlertLevel = 'baseline';
+        let checkedSymptoms = {
+            yellow: new Set(),
+            orange: new Set(),
+            red: new Set()
+        };
+        let dailyLog = [];
+
+        function toggleSymptom(element, level) {
+            try {
+                if (!element || !element.dataset) return;
+                
+                const symptom = element.dataset.symptom;
+                const isChecked = element.classList.contains('checked');
+                const symptomTextElement = element.querySelector('.symptom-text');
+                
+                if (!symptom || !symptomTextElement) return;
+                
+                if (isChecked) {
+                    element.classList.remove('checked');
+                    checkedSymptoms[level].delete(symptom);
+                    logEntry(`Removed: ${symptomTextElement.textContent}`, level);
+                } else {
+                    element.classList.add('checked');
+                    checkedSymptoms[level].add(symptom);
+                    logEntry(`${symptomTextElement.textContent}`, level);
+                }
+                
+                updateStatus();
+                updateInterventions();
+            } catch (error) {
+                console.log('Error in toggleSymptom:', error);
+            }
+        }
+
+        function updateStatus() {
+            try {
+                const redCount = checkedSymptoms.red ? checkedSymptoms.red.size : 0;
+                const orangeCount = checkedSymptoms.orange ? checkedSymptoms.orange.size : 0;
+                const yellowCount = checkedSymptoms.yellow ? checkedSymptoms.yellow.size : 0;
+                
+                const statusDiv = document.getElementById('currentStatus');
+                const statusAdvice = document.getElementById('statusAdvice');
+                
+                if (!statusDiv || !statusAdvice) return;
+                
+                if (redCount > 0) {
+                    currentAlertLevel = 'red';
+                    statusDiv.className = 'current-status status-red';
+                    statusDiv.innerHTML = '<div class="status-header"><span>🔴 RED ALERT - Emergency Protocols Needed</span></div><div class="status-content"><div class="status-description">Emergency protocols needed</div><div class="status-advice" id="statusAdvice">Your nervous system needs immediate support. Use crisis interventions and remember this will pass.</div></div>';
+                } else if (orangeCount >= 2 || (orangeCount >= 1 && yellowCount >= 2)) {
+                    currentAlertLevel = 'orange';
+                    statusDiv.className = 'current-status status-orange';
+                    statusDiv.innerHTML = '<div class="status-header"><span>🟠 ORANGE ALERT - Intervention Needed Now</span></div><div class="status-content"><div class="status-description">Intervention needed now</div><div class="status-advice" id="statusAdvice">Your processing capacity is overloaded. Take immediate action to prevent escalation.</div></div>';
+                } else if (yellowCount >= 2) {
+                    currentAlertLevel = 'yellow';
+                    statusDiv.className = 'current-status status-yellow';
+                    statusDiv.innerHTML = '<div class="status-header"><span>🟡 YELLOW ALERT - Early Warning Signs Active</span></div><div class="status-content"><div class="status-description">Early warning signs active</div><div class="status-advice" id="statusAdvice">You\'re noticing early signs. This is a good time to use preventive strategies.</div></div>';
+                } else {
+                    currentAlertLevel = 'baseline';
+                    statusDiv.className = 'current-status status-green';
+                    statusDiv.innerHTML = '<div class="status-header"><span>🟢 Baseline - Systems Functioning Normally</span></div><div class="status-content"><div class="status-description">Systems functioning normally</div><div class="status-advice" id="statusAdvice">You\'re in a good space right now. This is a great time for proactive self-care and planning.</div></div>';
+                }
+            } catch (error) {
+                console.log('Error in updateStatus:', error);
+            }
+        }
+
+        function updateInterventions() {
+            try {
+                const yellowBox = document.getElementById('yellowIntervention');
+                const orangeBox = document.getElementById('orangeIntervention');
+                const redBox = document.getElementById('redIntervention');
+                
+                if (yellowBox) yellowBox.classList.toggle('show', checkedSymptoms.yellow.size > 0);
+                if (orangeBox) orangeBox.classList.toggle('show', checkedSymptoms.orange.size > 0);
+                if (redBox) redBox.classList.toggle('show', checkedSymptoms.red.size > 0);
+            } catch (error) {
+                console.log('Error in updateInterventions:', error);
+            }
+        }
+
+        function logEntry(message, level) {
+            try {
+                const now = new Date();
+                const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                if (!dailyLog) dailyLog = [];
+                
+                dailyLog.unshift({
+                    time: time,
+                    message: message,
+                    level: level
+                });
+                
+                updateLogDisplay();
+            } catch (error) {
+                console.log('Error in logEntry:', error);
+            }
+        }
+
+        function updateLogDisplay() {
+            try {
+                const logDiv = document.getElementById('timeLog');
+                if (!logDiv) return;
+                
+                if (!dailyLog || dailyLog.length === 0) {
+                    logDiv.innerHTML = '<div class="log-entry">Start tracking by checking symptoms above</div>';
+                    return;
+                }
+                
+                const logHTML = dailyLog.slice(0, 8).map(entry => 
+                    '<div class="log-entry"><strong>' + entry.time + '</strong> - ' + entry.message + '</div>'
+                ).join('');
+                
+                logDiv.innerHTML = logHTML;
+            } catch (error) {
+                console.log('Error in updateLogDisplay:', error);
+            }
+        }
+
+        function copyLog() {
+            try {
+                if (!dailyLog || dailyLog.length === 0) {
+                    navigator.clipboard.writeText('No pattern log entries today.');
+                    return;
+                }
+                
+                const today = new Date().toLocaleDateString();
+                let logText = `Pattern Log - ${today}\n\n`;
+                
+                dailyLog.forEach(entry => {
+                    logText += `${entry.time} - ${entry.message}\n`;
+                });
+                
+                navigator.clipboard.writeText(logText).then(() => {
+                    // Temporarily change button text to show success
+                    const copyBtn = document.querySelector('.copy-btn');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = logText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                });
+                
+            } catch (error) {
+                console.log('Error in copyLog:', error);
+            }
+        }
+
+        function resetAll() {
+            try {
+                const checkedItems = document.querySelectorAll('.symptom-item.checked');
+                checkedItems.forEach(item => {
+                    if (item) item.classList.remove('checked');
+                });
+                
+                if (checkedSymptoms.yellow) checkedSymptoms.yellow.clear();
+                if (checkedSymptoms.orange) checkedSymptoms.orange.clear();
+                if (checkedSymptoms.red) checkedSymptoms.red.clear();
+                
+                updateStatus();
+                updateInterventions();
+                logEntry('Reset all symptoms', 'system');
+            } catch (error) {
+                console.log('Error in resetAll:', error);
+            }
+        }
+
+        function clearLog() {
+            try {
+                dailyLog = [];
+                updateLogDisplay();
+            } catch (error) {
+                console.log('Error in clearLog:', error);
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                updateStatus();
+                updateInterventions();
+            } catch (error) {
+                console.log('Error in initialization:', error);
+            }
+        });
+
+        // Fallback initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                updateStatus();
+                updateInterventions();
+            });
+        } else {
+            updateStatus();
+            updateInterventions();
+        }
+    </script>
+</body>
+</html>
